@@ -1,0 +1,47 @@
+enum PetType{
+    DOG
+    CAT
+}
+
+type Money{
+    amount: Float
+}
+
+type Pet {
+    id: ID!
+    name: String!
+    type: String!
+    description: String
+    owner: User
+    price: Money
+    birthDate: String!
+    rating: Int
+    age: Int
+}
+
+type User {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    email: String!
+    budget: Money!
+}
+
+type HistoryLog {
+    dateOfExecution: String
+    successfulPurchases: Int
+    failedPurchases: Int
+}
+
+type Query {
+    listPets: [Pet]
+    listUsers: [User]
+    historyLogs: [HistoryLog]
+    petWithoutOwner: Pet
+}
+
+type Mutation {
+    createPets: [Pet!]!
+    createUsers: [User!]!
+    buy: HistoryLog
+}
