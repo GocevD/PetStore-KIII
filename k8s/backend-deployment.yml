@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: petstore-backend
+  namespace: petstore
+  labels:
+    app: petstore-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: petstore-backend
+  template:
+    metadata:
+      labels:
+        app: petstore-backend
+    spec:
+      containers:
+      - name: backend
+        image: dimitarxz/petstore-backend:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_DATASOURCE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: petstore-config
+              key: SPRING_DATASOURCE_URL
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: petstore-config
+              key: SPRING_DATASOURCE_USERNAME
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: petstore-secret
+              key: SPRING_DATASOURCE_PASSWORD
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10

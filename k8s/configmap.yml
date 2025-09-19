@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: petstore-config
+  namespace: petstore
+data:
+  POSTGRES_DB: "petstoredb"
+  POSTGRES_USER: "petstoreadmin"
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://petstore-db-service:5432/petstoredb"
+  SPRING_DATASOURCE_USERNAME: "petstoreadmin"
+  DB_HOST: "petstore-db-service"
+  DB_PORT: "5432"

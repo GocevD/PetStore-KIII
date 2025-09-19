@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: petstore-db
+  namespace: petstore
+  labels:
+    app: petstore-db
+spec:
+  serviceName: petstore-db-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: petstore-db
+  template:
+    metadata:
+      labels:
+        app: petstore-db
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16
+        ports:
+        - containerPort: 5432
+          name: postgres
+        env:
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: petstore-config
+              key: POSTGRES_DB
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              name: petstore-config
+              key: POSTGRES_USER
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: petstore-secret
+              key: POSTGRES_PASSWORD
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          exec:
+            command:
+            - /usr/bin/pg_isready
+            - -U
+            - petstoreadmin
+            - -d
+            - petstoredb
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command:
+            - /usr/bin/pg_isready
+            - -U
+            - petstoreadmin
+            - -d
+            - petstoredb
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
