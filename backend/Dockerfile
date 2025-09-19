@@ -1,4 +1,4 @@
-FROM openjdk:24 AS build
+FROM openjdk:21 AS build
 
 WORKDIR /app
 
@@ -18,7 +18,7 @@ COPY src ./src
 RUN ./mvnw clean package
 
 
-FROM openjdk:24
+FROM openjdk:21
 
 WORKDIR /app
 
