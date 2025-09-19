@@ -122,8 +122,13 @@ jobs:
     runs-on: ubuntu-latest
     name: Security Scan Backend
     if: github.event_name == 'push'
+    permissions:
+      security-events: write
 
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
     - name: Run Trivy vulnerability scanner - Backend
       uses: aquasecurity/trivy-action@master
       with:
@@ -133,6 +138,7 @@ jobs:
 
     - name: Upload Backend Trivy scan results
       uses: github/codeql-action/upload-sarif@v3
+      if: always()
       with:
         sarif_file: 'backend-trivy-results.sarif'
         category: 'backend'
@@ -142,8 +148,13 @@ jobs:
     runs-on: ubuntu-latest
     name: Security Scan Frontend
     if: github.event_name == 'push'
+    permissions:
+      security-events: write
 
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
     - name: Run Trivy vulnerability scanner - Frontend
       uses: aquasecurity/trivy-action@master
       with:
@@ -153,6 +164,7 @@ jobs:
 
     - name: Upload Frontend Trivy scan results
       uses: github/codeql-action/upload-sarif@v3
+      if: always()
       with:
         sarif_file: 'frontend-trivy-results.sarif'
         category: 'frontend'
